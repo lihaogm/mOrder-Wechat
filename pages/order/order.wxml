@@ -1,0 +1,53 @@
+  <view wx:if="{{listLength > 0}}">
+    <view  class="order-box" wx:for="{{orderlist}}" bindtap="toOrderDetail" >
+        <view class="h4 color-green">桌号：{{item.desk_id}}</view>
+        <view wx:for="{{item.catlist}}" wx:key="">        
+           <view class="flex-display padding-15">
+            <view class="flex-width-1">
+              <view>{{item.name}}</view>
+            </view>
+            <view class="">x{{item.quantity}}</view>
+          </view>
+        </view>
+        <view class="order-detail">
+            <view class="order-left">
+                <text class="order-date">用餐人数：</text>
+            </view>
+            <view class="order-right">
+                <text class="order-price">{{item.peoples}}位</text>              
+            </view>
+        </view>
+        <view class="order-detail">
+            <view class="order-left">
+                <text class="order-date">用餐备注：</text>
+            </view>
+            <view class="order-right">
+                <text class="order-price">{{item.remarks}}</text>              
+            </view>
+        </view>
+        <view class="order-detail">
+            <view class="order-left">
+                <text class="order-date">{{item.order_id}}</text>
+            </view>
+            <view class="order-right">
+                <text class="order-price color-red">￥{{item.totalPrice}}</text>
+                <text class="color-green">已支付</text>
+            </view>
+        </view>
+
+        <view wx:if="{{item.state == 0}}" class="order-detail">
+            <view class="order-left">
+                <text class="order-date red">{{item.time_expire}}</text>
+            </view>
+            <view class="order-right red">
+                <text class="order-state">到期时间</text>
+            </view>
+        </view>
+    </view>
+    </view>
+
+    <view wx:else class="no-order-box padding-top-30">
+        <view class="cart-off"><image src="../../image/cart-off.png"></image></view>
+        <view class="no-order">购物车，空空如也:-)</view>
+        <navigator open-type="switchTab" url="../index/index" hover-class="navigator-hover" class="continueBook"> 去首页逛逛 </navigator>
+    </view>

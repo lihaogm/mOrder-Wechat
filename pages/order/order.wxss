@@ -1,0 +1,168 @@
+.page-title{
+    width: 100%;
+    background-size: 16rpx auto,750rpx auto;
+    background-color: #fff;
+    margin: 20rpx 0;
+    text-align:center;
+    line-height:15vh;
+    font-size:50rpx;
+    font-weight:700;
+}
+
+.order-box{
+    display:-webkit-flex;
+    display:flex;
+    flex-direction: column;
+    border-bottom:1px solid #E1E1E1;
+    margin:10px 0;
+}
+
+.order-box .order-number{
+    font-size:40rpx;
+    padding:10rpx;
+}
+
+.order-box .order-title{
+    font-size:14px;
+    padding:10rpx;
+    margin:5px 0;
+}
+
+.order-box .order-detail{
+    display:flex;
+    justify-content: space-between;
+    font-size:14px;
+    margin:10rpx 0;
+    padding:10rpx;
+}
+
+.order-box .order-detail .order-right .order-price{
+    padding-right:15rpx;
+}
+
+navigator{width:320px;height:50px;text-align:center;line-height:50px;margin:0 auto;display:block;border-radius:4px;}
+.continueBook{background:#FB4C22;color:#fff;border:1px solid #FB4C22;margin-top:20px;}
+
+.no-order-box{
+    text-align:center;
+}
+.no-order-box .cart-off image{
+    width:50px;
+    height:50px;
+    margin:10rpx;
+}
+display-prefex{
+   display:flex;
+}
+
+.contain{
+  background-color: #f5f9f8;
+  font-family: 微软雅黑；
+}
+.margin-top-15{
+  margin-top:15rpx; 
+}
+.margin-left-15{
+  margin-left: 15rpx;
+}
+.margin-right-15{
+  margin-right: 15rpx;
+}
+.margin-bottom{
+  margin-bottom: 15rpx;
+}
+.padding-20{
+  padding:20rpx;
+}
+.padding-15{
+  padding:15rpx;
+}
+.padding-5{
+  padding: 8rpx;
+  border-radius: 10rpx;
+}
+.padding-top-15{
+  padding-top: 15rpx;
+}
+.padding-top-30{
+  padding-top: 30rpx;
+}
+.padding-left-15{
+  padding-left: 15rpx;
+}
+.padding-left-20{
+  padding-left: 20rpx;
+}
+.padding-right-15{
+  padding-right: 15rpx;
+}
+.padding-bottom-15{
+  padding-bottom:15rpx;
+}
+.font-size-25{
+  font-size: 25rpx;
+}
+.font-size-30{
+  font-size: 30rpx;
+}
+.background-color-white{
+  background-color: white;
+}
+.border-bottom{
+  border-bottom: 1rpx solid #f4f4f4;
+}
+.flex-display{
+  display: -webkit-flex;
+}
+.flex-display-colum{
+  display: -webkit-flex;
+  flex-direction: column;
+}
+.flex-width-1{
+  flex: 1;
+}
+.flex-width-2{
+  flex: 2;
+}
+.flex-width-5{
+  flex: 5;
+}
+.border-left{
+  border-left:1rpx solid #ccc;
+}
+.color-red{
+  color: red;
+}
+.titleImage{
+  width: 80rpx;
+  height: 80rpx;
+}
+.background-tab{
+  background-color: #ccc;
+  color: white;
+}
+.color-red{
+  color: red;
+}
+.color-green{
+  color: green;
+}
+.text-center{
+  text-align: center;
+}
+.message-image{
+  width: 50rpx;
+  height: 50rpx;
+}
+.color-green{
+  color: green;
+}
+.add-image{
+  position: fixed;
+  bottom: 100rpx;
+  right: 100rpx;
+}
+.add-image image{
+  width: 100rpx;
+  height: 100rpx;
+}
