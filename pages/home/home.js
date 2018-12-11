@@ -45,8 +45,54 @@ Page({
     second: 60,
 
   },
+  // 页面加载
   onLoad: function (options) {
+
     var that = this
+
+    wx.showLoading({
+      title: '正在加载...',
+    })
+
+    // 获取服务器数据
+    wx.request({
+      url: 'http://localhost:8080/mOrder/wxFoodList',
+      method: 'get',
+      data: {
+      },
+      success: function (res) {
+        if (res.statusCode === 200) {
+          // console.log(res.data[0].fname) // 服务器回包内容
+          // 设置值
+          that.setData({
+            food_info_key:res.data
+          })
+          // 写入数据到缓存
+          wx.setStorage({
+            key: 'mfood_key',
+            data: res.data,
+            success: function () {
+              console.log('写入food_info成功')
+            },
+            fail: function () {
+              console.log('写入food_info发生错误')
+            }
+          })
+        }
+      },
+      fail: function (res) {
+        wx.showToast({
+          title: '系统错误'
+        })
+      },
+      complete: function (res) {
+        wx.hideLoading()
+      }
+    })
+
+
+
+
     // 获取购物车缓存数据
     var arr = wx.getStorageSync('cart') || [];
     // 左分类菜单
@@ -469,6 +515,7 @@ Page({
       }
     });
   },
+  // ------------
   // 点击切换tab
   tabClick: function (e) {
     this.setData({
@@ -502,13 +549,15 @@ Page({
   },
   // 购物车增加数量
   addCount: function (e) {
+    // 获取菜品的id
     var id = e.currentTarget.dataset.id;
+    // 获取购物车缓存数据，加入数组中
     var arr = wx.getStorageSync('cart') || [];
     var f = false;
     for (var i in this.data.foodList) {// 遍历菜单找到被点击的菜品，数量加1
       if (this.data.foodList[i].id == id) {
-        this.data.foodList[i].quantity += 1;
-        if (arr.length > 0) {
+        this.data.foodList[i].quantity += 1; // 菜品所选数量加1
+        if (arr.length > 0) { // 购物车中原来有数据
           for (var j in arr) {// 遍历购物车找到被点击的菜品，数量加1
             if (arr[j].id == id) {
               arr[j].quantity += 1;
@@ -521,10 +570,10 @@ Page({
               break;
             }
           }
-          if (!f) {
+          if (!f) { // 如果购物车中没有选中的商品，则添加一个
             arr.push(this.data.foodList[i]);
           }
-        } else {
+        } else { // 购物车原来没有数据，则添加选中的商品
           arr.push(this.data.foodList[i]);
         }
         try {
@@ -535,7 +584,7 @@ Page({
         break;
       }
     }
-
+    // 设置数据，给购物车列表赋值，给菜品列表重新赋值
     this.setData({
       cartList: arr,
       foodList: this.data.foodList

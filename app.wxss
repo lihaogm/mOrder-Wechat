@@ -11,7 +11,7 @@
   box-sizing: border-box;
 } 
 .bc_red{
-  background-color: #FB4C22;
+  background-color: #1D3FA3;
 }
 .bc_white{
    background-color: #ffffff;

@@ -90,8 +90,8 @@
 
 .active {
   background-color: #fff;
-  color:#FB4C22;
-  border-left: 6rpx #FB4C22 solid;
+  color:#1D3FA3;
+  border-left: 6rpx #1D3FA3 solid;
 }
 
 /*右侧  */
@@ -160,7 +160,7 @@
 .cai_price {
   font-weight: bold;
   font-size: 32rpx;
-  color: #FB4C22;
+  color: #1D3FA3;
 }
 
 /*人民币符号*/
@@ -209,7 +209,7 @@
 .shop_cartBox {
   width: 100rpx;
   height: 100rpx;
-  background-color: #FB4C22;
+  background-color: #1D3FA3;
   border-radius: 50%;
   position: absolute;
   top: -40rpx;
@@ -248,7 +248,7 @@
 }
 
 .fontP {
-  color: #FB4C22;
+  color: #1D3FA3;
   font-size: 40rpx;
 }
 
@@ -285,7 +285,7 @@
   text-align: center;
   position: fixed;
   left: 0;
-  background-color: #FB4C22;
+  background-color: #1D3FA3;
   color: #fff;
 }
 
@@ -338,7 +338,7 @@
   margin-left: 40rpx;
   font-size: 14px;
   padding-bottom: 10rpx;
-  color: #FB4C22;
+  color: #1D3FA3;
 }
 
 .price-box {
@@ -422,7 +422,7 @@
 }
 
 .order_Money {
-  color: #FB4C22;
+  color: #1D3FA3;
 }
 
 .order_payd {
@@ -504,5 +504,5 @@
 .color-block{
   color: #fff;
   font-size: 35rpx;
-  background: #FB4C22;
+  background: #1D3FA3;
 }

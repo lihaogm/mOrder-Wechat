@@ -1,12 +1,12 @@
 <!--logs.wxml-->
 <view class="page">
   <view class="weui-panel__bd posi_fiexd">
-    <navigator url="" class="weui-media-box weui-media-box_appmsgn new_padd  bc_red" hover-class="none">
+    <navigator url="" class="weui-media-box weui-media-box_appmsgn new_padd bc_red" hover-class="none">
       <view class="weui-media-box__hd weui-media-box__hd_in-appmsg" style="width:120rpx;height:120rpx">
-        <image class="weui-media-box__thumb bd_radius" src="../../image/logo60.png" />
+        <image class="weui-media-box__thumb bd_radius" src="../../image/njupt-logo.jpg" />
       </view>
       <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
-        <view class="weui-media-box__title  color_white">广州大学华软软件学院</view>
+        <view class="weui-media-box__title  color_white">南京邮电大学</view>
         <view class="weui-media-box__desc color_white">点餐小程序</view>
       </view>
     </navigator>
@@ -19,28 +19,28 @@
       <view class="weui-tab__content" hidden="{{activeIndex != 0}}">
         <!--左侧栏  -->
         <scroll-view scroll-y class="left-cont">
-          <block class="caixi" wx:key="id" wx:for="{{menu_list}}">
-            <view class="classify  {{curNav == item.id ? 'active' : ''}}" bindtap="changeRightMenu" data-id="{{item.id}}">{{item.name}}</view>
+          <block class="caixi" wx:key="id" wx:for="{{food_info_key['foodCategoryList']}}">
+            <view class="classify  {{curNav == item.pk_fcwc_id ? 'active' : ''}}" bindtap="changeRightMenu" data-id="{{item.pk_fcwc_id}}">{{item.fcwc_name}}</view>
           </block>
         </scroll-view>
         <!--右侧栏  -->
         <scroll-view scroll-y class="right-cont">
-          <block wx:for="{{foodList}}" wx:key="">
+          <block wx:for="{{food_info_key['foodList']}}" wx:key="">
             <view class="weui-panel__bd mb_bottom">
               <view class=" weui-media-box_appmsg bc_white mT" hover-class="none">
                 <view class="weui-media-box__hd  img_box ">
                 <!--图片链接  -->
                    
                       <!-- <image class="weui-media-box__thumb"  src=""/>     -->
-                     <image class="weui-media-box__thumb img_box" src="../../image/1.jpg" />  
+                     <image class="weui-media-box__thumb img_box" src="http://localhost:8080/mOrder/images/food_menu/test.jpg" />  
                 </view>
                 <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
-                  <view class="cai_title" data-index="{{index}}">{{item.name}}</view>
+                  <view class="cai_title" data-index="{{index}}">{{item.fname}}</view>
                   <view class="cai_desc" wx:if="{{item.note == ''}}">暂无介绍</view>
-                  <view class="cai_desc" wx:else>{{item.note}}</view> 
-                  <view class="cai_desc"> 销量：{{item.sales}} </view>
+                  <view class="cai_desc" wx:else>{{item.fdesc}}</view> 
+                  <view class="cai_desc"> 销量：{{item.food_sales_num}} </view>
                   <view class="price-stepper">
-                    <view class="cai_price"  data-index="{{index}}">{{item.price}}</view>
+                    <view class="cai_price"  data-index="{{index}}">{{item.fshop_price}}</view>
                     <view class="stepper">
                       <!-- 减号 -->
                       <view class="iconfont icon-minus2 fontP" hidden="{{item.quantity<=0}}" bindtap="minusCount"  data-id="{{item.id}}"  data-index="{{index}}"></view>
@@ -81,7 +81,7 @@
           <!-- 减号 -->
           <view class="iconfont icon-minus2 fontP" hidden="{{item.quantity<=0}}"  data-index="{{index}}" data-id="{{item.id}}"  bindtap="minusCount"></view>
           <!-- 数量 -->
-          <view class="value" style="color:#ff9600;margin-top:8rpx" hidden="{{item.quantity<=0}}" data-id="{{item.id}}">{{item.quantity}}</view>
+          <view class="value" style="color:#1D3FA3;margin-top:8rpx" hidden="{{item.quantity<=0}}" data-id="{{item.id}}">{{item.quantity}}</view>
           <!-- 加号 -->
           <view class="iconfont icon-plus1  fontP" bindtap="addCount" data-id="{{item.id}}" data-index="{{index}}"></view>
         </view>
