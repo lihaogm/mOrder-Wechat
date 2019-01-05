@@ -17,6 +17,8 @@ Page({
     sliderOffset: 0,
     sliderLeft: 0,
     sliderWidth: 0.5,
+    // 菜品信息
+    food_info_key: [],
     // 右菜单
     menu_list: [],
     // 左菜单
@@ -59,23 +61,88 @@ Page({
       url: 'http://localhost:8080/mOrder/wxFoodList',
       method: 'get',
       data: {
+        id: 1
       },
       success: function (res) {
         if (res.statusCode === 200) {
-          // console.log(res.data[0].fname) // 服务器回包内容
-          // 设置值
+          // console.log(res.data["foodList"]) // 服务器回包内容
+
+          var food_info_key = that.data.food_info_key
+          // 设置页面数据
           that.setData({
-            food_info_key:res.data
+            food_info_key: res.data
           })
+
+          // 获取购物车缓存数据
+          var arr = wx.getStorageSync('cart') || [];
+          // 左分类菜单
+          var menu_list = that.data.menu_list;
+          // 获取左侧分类菜单数据
+          var categories = res.data["foodCategoryList"]
+          that.setData({
+            menu_list: categories,
+          })
+
+          // 右菜品菜单
+          var foodList = that.data.foodList;
+          var allFoodList = that.data.allFoodList;
+          // 购物车总量、总价
+          var totalPrice = that.data.totalPrice
+          var totalNum = that.data.totalNum
+          // 获取右侧菜品列表数据
+          var resFood = res.data["foodList"]
+          // 初始化数量
+          for (var i in resFood) {
+            resFood[i].quantity = 0
+          }
+          console.log(resFood)
+
+          // 进入页面后判断购物车是否有数据，如果有，将菜单与购物车quantity数据统一
+          if (arr.length > 0) {
+            for (var i in arr) {
+              for (var j in resFood) {
+                if (resFood[j].pk_fid == arr[i].pk_fid) {
+                  resFood[j].quantity = arr[i].quantity;
+                }
+              }
+            }
+          }
+
+          // 进入页面计算购物车总价、总数
+          if (arr.length > 0) {
+            for (var i in arr) {
+              totalPrice += arr[i].fshop_price * arr[i].quantity;
+              totalNum += Number(arr[i].quantity);
+            }
+          }
+          // 赋值数据
+          that.setData({
+            hasList: true,
+            cartList: arr,
+            foodList: resFood,
+            allFoodList: resFood,
+            // payFlag: that.data.payFlag,
+            totalPrice: totalPrice.toFixed(2),
+            totalNum: totalNum
+          })
+          wx.getSystemInfo({
+            success: function (res) {
+              that.setData({
+                sliderLeft: (res.windowWidth / that.data.tabs.length - res.windowWidth / 2) / 2,
+                sliderOffset: res.windowWidth / that.data.tabs.length * that.data.activeIndex,
+              });
+            }
+          });
+
           // 写入数据到缓存
           wx.setStorage({
-            key: 'mfood_key',
+            key: 'food_key',
             data: res.data,
             success: function () {
-              console.log('写入food_info成功')
+              console.log('写入value成功')
             },
             fail: function () {
-              console.log('写入food_info发生错误')
+              console.log('写入value发生错误')
             }
           })
         }
@@ -89,431 +156,6 @@ Page({
         wx.hideLoading()
       }
     })
-
-
-
-
-    // 获取购物车缓存数据
-    var arr = wx.getStorageSync('cart') || [];
-    // 左分类菜单
-    var menu_list = this.data.menu_list;
-    // 获取左侧分类菜单数据
-    var categories = [
-      {
-        "id": 0,
-        "name": "全部"
-      },
-      {
-        "id": 9,
-        "name": "活动品"
-      },
-      {
-        "id": 1,
-        "name": "汤·粥"
-      },
-      {
-        "id": 2,
-        "name": "热菜"
-      },
-      {
-        "id": 5,
-        "name": "面点"
-      },
-      {
-        "id": 6,
-        "name": "特色"
-      },
-      {
-        "id": 7,
-        "name": "小吃"
-      },
-      {
-        "id": 8,
-        "name": "水吧"
-      }
-    ]
-    that.setData({
-      menu_list: categories,
-    })
-    // 右菜品菜单
-    var foodList = this.data.foodList;
-    var allFoodList = this.data.allFoodList;
-    // 购物车总量、总价
-    var totalPrice = this.data.totalPrice
-    var totalNum = this.data.totalNum
-    // 获取右侧菜品列表数据
-    var resFood = [
-      {
-        "id": 6,
-        "name": "美地麻辣小龙虾",
-        "thumb": "",
-        "price": "98.00",
-        "unit": "份",
-        "catid": 6,
-        "sales": 0,
-        "note": "",
-        "quantity": 0
-      },
-      {
-        "id": 7,
-        "name": "水吧鸡尾酒",
-        "thumb": "",
-        "price": "39.00",
-        "unit": "杯",
-        "catid": 8,
-        "sales": 0,
-        "note": "",
-        "quantity": 0
-      },
-      {
-        "id": 9,
-        "name": "九塔香辣子鸡",
-        "thumb": "",
-        "price": "68.00",
-        "unit": "份",
-        "catid": 2,
-        "sales": 0,
-        "note": "",
-        "quantity": 0
-      },
-      {
-        "id": 10,
-        "name": "跳舞茄盒",
-        "thumb": "",
-        "price": "40.00",
-        "unit": "份",
-        "catid": 2,
-        "sales": 0,
-        "note": "",
-        "quantity": 0
-      },
-      {
-        "id": 12,
-        "name": "土匪猪肝",
-        "thumb": "",
-        "price": "40.00",
-        "unit": "份",
-        "catid": 2,
-        "sales": 0,
-        "note": "",
-        "quantity": 0
-      },
-      {
-        "id": 13,
-        "name": "小炒黄牛肉",
-        "thumb": "",
-        "price": "58.00",
-        "unit": "份",
-        "catid": 2,
-        "sales": 0,
-        "note": "",
-        "quantity": 0
-      },
-      {
-        "id": 14,
-        "name": "小酥肉",
-        "thumb": "",
-        "price": "19.00",
-        "unit": "份",
-        "catid": 2,
-        "sales": 0,
-        "note": "",
-        "quantity": 0
-      },
-      {
-        "id": 15,
-        "name": "橄榄油腊鲜有机花菜\t",
-        "thumb": "",
-        "price": "28.00",
-        "unit": "份",
-        "catid": 2,
-        "sales": 0,
-        "note": "",
-        "quantity": 0
-      },
-      {
-        "id": 19,
-        "name": "榴莲面包",
-        "thumb": "",
-        "price": "29.80",
-        "unit": "份",
-        "catid": 5,
-        "sales": 0,
-        "note": "",
-        "quantity": 0
-      },
-      {
-        "id": 20,
-        "name": "泡芙",
-        "thumb": "",
-        "price": "6.00",
-        "unit": "斤",
-        "catid": 5,
-        "sales": 0,
-        "note": "",
-        "quantity": 0
-      },
-      {
-        "id": 21,
-        "name": "手撕包菜",
-        "thumb": "",
-        "price": "19.00",
-        "unit": "份",
-        "catid": 2,
-        "sales": 0,
-        "note": "",
-        "quantity": 0
-      },
-      {
-        "id": 22,
-        "name": "糖醋里脊",
-        "thumb": "",
-        "price": "97.90",
-        "unit": "份",
-        "catid": 2,
-        "sales": 0,
-        "note": "",
-        "quantity": 0
-      },
-      {
-        "id": 24,
-        "name": "我是热菜区的new菜",
-        "thumb": "",
-        "price": "25.00",
-        "unit": "份",
-        "catid": 2,
-        "sales": 0,
-        "note": "",
-        "quantity": 0
-      },
-      {
-        "id": 25,
-        "name": "美地麻辣小龙虾",
-        "thumb": "",
-        "price": "125.00",
-        "unit": "份",
-        "catid": 6,
-        "sales": 0,
-        "note": "",
-        "quantity": 0
-      },
-      {
-        "id": 26,
-        "name": "美地甜点",
-        "thumb": "",
-        "price": "20.00",
-        "unit": "15",
-        "catid": 7,
-        "sales": 0,
-        "note": "",
-        "quantity": 0
-      },
-      {
-        "id": 27,
-        "name": "特色小龙虾",
-        "thumb": "/uploads/20178/201708311002557FPpnEyE.jpg",
-        "price": "89.90",
-        "unit": "份",
-        "catid": 2,
-        "sales": 0,
-        "note": "",
-        "quantity": 0
-      },
-      {
-        "id": 28,
-        "name": "雕黄醉蟹钳",
-        "thumb": "/uploads/20178/20170831165625IyWlwdFM.jpg",
-        "price": "48.00",
-        "unit": "份",
-        "catid": 2,
-        "sales": 0,
-        "note": "",
-        "quantity": 0
-      },
-      {
-        "id": 29,
-        "name": "雕黄醉蟹钳1",
-        "thumb": "/uploads/20178/20170831165711bLN478bK.jpg",
-        "price": "48.00",
-        "unit": "份",
-        "catid": 2,
-        "sales": 0,
-        "note": "",
-        "quantity": 0
-      },
-      {
-        "id": 30,
-        "name": "百合莲子红豆露",
-        "thumb": "",
-        "price": "32.00",
-        "unit": "扎",
-        "catid": 8,
-        "sales": 0,
-        "note": "",
-        "quantity": 0
-      },
-      {
-        "id": 31,
-        "name": "屈臣氏香草苏打水",
-        "thumb": "",
-        "price": "15.00",
-        "unit": "瓶",
-        "catid": 8,
-        "sales": 0,
-        "note": "",
-        "quantity": 0
-      },
-      {
-        "id": 32,
-        "name": "赫默父子夏瑟尼蒙哈榭干白",
-        "thumb": "",
-        "price": "1888.00",
-        "unit": "瓶",
-        "catid": 8,
-        "sales": 0,
-        "note": "",
-        "quantity": 0
-      },
-      {
-        "id": 33,
-        "name": "美地特殊热菜",
-        "thumb": "",
-        "price": "35.00",
-        "unit": "20",
-        "catid": 2,
-        "sales": 0,
-        "note": "",
-        "quantity": 0
-      },
-      {
-        "id": 34,
-        "name": "醋溜白菜",
-        "thumb": "",
-        "price": "15.00",
-        "unit": "12",
-        "catid": 2,
-        "sales": 0,
-        "note": "",
-        "quantity": 0
-      },
-      {
-        "id": 35,
-        "name": "东北乱炖",
-        "thumb": "",
-        "price": "38.00",
-        "unit": "30",
-        "catid": 2,
-        "sales": 0,
-        "note": "",
-        "quantity": 0
-      },
-      {
-        "id": 36,
-        "name": "信用小炒",
-        "thumb": "",
-        "price": "28.00",
-        "unit": "份",
-        "catid": 2,
-        "sales": 0,
-        "note": "",
-        "quantity": 0
-      },
-      {
-        "id": 37,
-        "name": "清炒花菜",
-        "thumb": "",
-        "price": "23.00",
-        "unit": "份",
-        "catid": 2,
-        "sales": 0,
-        "note": "",
-        "quantity": 0
-      },
-      {
-        "id": 38,
-        "name": "炒苦瓜",
-        "thumb": "",
-        "price": "20.00",
-        "unit": "份",
-        "catid": 2,
-        "sales": 0,
-        "note": "",
-        "quantity": 0
-      },
-      {
-        "id": 1,
-        "name": "味增烤晴鱼",
-        "thumb": "",
-        "price": "158.00",
-        "unit": "份",
-        "catid": 2,
-        "sales": 0,
-        "note": "",
-        "quantity": 0
-      },
-      {
-        "id": 2,
-        "name": "铁板脆皮豆腐",
-        "thumb": "",
-        "price": "48.00",
-        "unit": "份",
-        "catid": 2,
-        "sales": 0,
-        "note": "",
-        "quantity": 0
-      },
-      {
-        "id": 3,
-        "name": "石斛养生菌汤",
-        "thumb": "",
-        "price": "28.00",
-        "unit": "份",
-        "catid": 1,
-        "sales": 0,
-        "note": "",
-        "quantity": 0
-      }
-    ]
-
-    // 进入页面后判断购物车是否有数据，如果有，将菜单与购物车quantity数据统一
-    if (arr.length > 0) {
-      for (var i in arr) {
-        for (var j in resFood) {
-          if (resFood[j].id == arr[i].id) {
-            resFood[j].quantity = arr[i].quantity;
-          }
-        }
-      }
-    }
-    // that.setData({
-    //   foodList: resFood,
-    //   allFoodList: resFood,
-    // })
-    // 进入页面计算购物车总价、总数
-    if (arr.length > 0) {
-      for (var i in arr) {
-        totalPrice += arr[i].price * arr[i].quantity;
-        totalNum += Number(arr[i].quantity);
-      }
-    }
-    // 赋值数据
-    this.setData({
-      hasList: true,
-      cartList: arr,
-      foodList: resFood,
-      allFoodList: resFood,
-      payFlag: this.data.payFlag,
-      totalPrice: totalPrice.toFixed(2),
-      totalNum: totalNum
-    })
-    wx.getSystemInfo({
-      success: function (res) {
-        that.setData({
-          sliderLeft: (res.windowWidth / that.data.tabs.length - res.windowWidth / 2) / 2,
-          sliderOffset: res.windowWidth / that.data.tabs.length * that.data.activeIndex,
-        });
-      }
-    });
   },
   // ------------
   // 点击切换tab
@@ -536,7 +178,7 @@ Page({
       })
     } else { //选择了其他选项
       for (var i in allFoodList) {
-        if (allFoodList[i].catid == classify) {
+        if (allFoodList[i].fcwc_id == classify) {
           newFoodList.push(allFoodList[i])
         }
       }
@@ -555,11 +197,11 @@ Page({
     var arr = wx.getStorageSync('cart') || [];
     var f = false;
     for (var i in this.data.foodList) {// 遍历菜单找到被点击的菜品，数量加1
-      if (this.data.foodList[i].id == id) {
+      if (this.data.foodList[i].pk_fid == id) {
         this.data.foodList[i].quantity += 1; // 菜品所选数量加1
         if (arr.length > 0) { // 购物车中原来有数据
           for (var j in arr) {// 遍历购物车找到被点击的菜品，数量加1
-            if (arr[j].id == id) {
+            if (arr[j].pk_fid == id) {
               arr[j].quantity += 1;
               f = true;
               try {
@@ -605,14 +247,14 @@ Page({
     var id = e.currentTarget.dataset.id;
     var arr = wx.getStorageSync('cart') || [];
     for (var i in this.data.foodList) {
-      if (this.data.foodList[i].id == id) {
+      if (this.data.foodList[i].pk_fid == id) {
         this.data.foodList[i].quantity -= 1;
         if (this.data.foodList[i].quantity <= 0) {
           this.data.foodList[i].quantity = 0;
         }
         if (arr.length > 0) {
           for (var j in arr) {
-            if (arr[j].id == id) {
+            if (arr[j].pk_fid == id) {
               arr[j].quantity -= 1;
               if (arr[j].quantity <= 0) {
                 this.removeByValue(arr, id)
@@ -648,7 +290,7 @@ Page({
     var totalP = 0;
     var totalN = 0
     for (var i in cartList) {                           // 循环列表得到每个数据
-      totalP += cartList[i].quantity * cartList[i].price;    // 所有价格加起来     
+      totalP += cartList[i].quantity * cartList[i].fshop_price;    // 所有价格加起来     
       totalN += cartList[i].quantity
     }
     this.setData({                                      // 最后赋值到data中渲染到页面
@@ -683,7 +325,7 @@ Page({
     var index = e.currentTarget.dataset.index;
     var arr = wx.getStorageSync('cart')
     for (var i in this.data.foodList) {
-      if (this.data.foodList[i].id == id) {
+      if (this.data.foodList[i].pk_fid == id) {
         this.data.foodList[i].quantity = 0;
       }
     }
@@ -757,7 +399,7 @@ Page({
   cascadeDismiss: function () {
     var that = this
     // 购物车关闭动画
-    that.animation.translate(0,285).step();
+    that.animation.translate(0, 285).step();
     that.setData({
       animationData: that.animation.export()
     });
@@ -884,7 +526,7 @@ Page({
   //   // console.log(mobile)
   //   // console.log(smscode)
   //   // console.log(rd_session)
-    
+
   //   wx.request({
   //     url: 'https://api.meidi.test.sszshow.com/wechatmeal/home/get_member',
   //     method: 'POST',
@@ -914,10 +556,10 @@ Page({
   //     }
   //   })
   // },
-  GetQueryString:function (name){
+  GetQueryString: function (name) {
     var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
     var r = window.location.search.substr(1).match(reg);
-    if(r!=null)return  unescape(r[2]); return null;
+    if (r != null) return unescape(r[2]); return null;
   }
 
 

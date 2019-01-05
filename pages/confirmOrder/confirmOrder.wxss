@@ -182,7 +182,7 @@
   text-align: center;
   color: #fff;
   font-size: 32rpx;
-  background-color: #09ba07;
+  background-color: #1D3FA3;
   border-radius: 20rpx;
 }
 
@@ -219,7 +219,7 @@
   text-align: center;
   position: fixed;
   left: 0;
-  background-color: #FB4C22;
+  background-color: #1D3FA3;
   color: #fff;
 }
 
@@ -256,6 +256,6 @@ padding-left: 20rpx;
   position: absolute;
   left: 60%;
   top: 20rpx;
-  color: #01bf05;
+  color: #1D3FA3;
 }
 

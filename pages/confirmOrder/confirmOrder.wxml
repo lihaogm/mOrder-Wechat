@@ -9,12 +9,12 @@
         <view class="weui-cells weui-cells_in-small-appmsg" wx:for="{{cartList}}" wx:key="">
           <navigator url="" class="weui-cell weui-cell_access weui_orderBox" hover-class="weui-cell_active">
             <view class="weui-cell__hd">
-              <image src="../../image/1.jpg" style="width: 26px;height: 26px;margin-right: 15px;" />
+              <image src="http://localhost:8080/mOrder/images/food_menu/test.jpg" style="width: 26px;height: 26px;margin-right: 15px;" />
             </view>
             <view class="weui-cell__bd weui-cell_primary">
-              <view>{{item.name}}</view>
+              <view>{{item.fname}}</view>
             </view>
-            <view class="weui-cell__ft order_price">x{{item.quantity}}，￥{{item.price}}</view>
+            <view class="weui-cell__ft order_price">x{{item.quantity}}，￥{{item.fshop_price}}</view>
           </navigator>
         </view>
       </view>
