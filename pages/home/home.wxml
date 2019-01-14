@@ -13,7 +13,6 @@
   </view>
   <!--tab  -->
   <view class="weui-tab">
-
     <view class="weui-tab__panel">
       <!--今日菜单  -->
       <view class="weui-tab__content" hidden="{{activeIndex != 0}}">
@@ -39,7 +38,7 @@
                   <view class="cai_title" data-index="{{index}}">{{item.fname}}</view>
                   <view class="cai_desc" wx:if="{{item.note == ''}}">暂无介绍</view>
                   <view class="cai_desc" wx:else>{{item.fdesc}}</view>
-                  <view class="cai_desc"> 销量：{{item.food_sales_num}} </view>
+                  <!-- <view class="cai_desc"> 销量：{{item.food_sales_num}} </view> -->
                   <view class="price-stepper">
                     <view class="cai_price" data-index="{{index}}">{{item.fshop_price}}</view>
                     <view class="stepper">

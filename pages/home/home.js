@@ -65,15 +65,14 @@ Page({
       },
       success: function (res) {
         if (res.statusCode === 200) {
-          // console.log(res.data["foodList"]) // 服务器回包内容
-
+          // test 服务器返回内容
+          // console.log('home.js onload 服务器返回数据',res.data["foodList"]) 
           var food_info_key = that.data.food_info_key
           // 设置页面数据
           that.setData({
             food_info_key: res.data
           })
-
-          // 获取购物车缓存数据
+          // 获取缓存数据--购物车
           var arr = wx.getStorageSync('cart') || [];
           // 左分类菜单
           var menu_list = that.data.menu_list;
@@ -91,11 +90,12 @@ Page({
           var totalNum = that.data.totalNum
           // 获取右侧菜品列表数据
           var resFood = res.data["foodList"]
-          // 初始化数量
+          // 初始化购买数量
           for (var i in resFood) {
             resFood[i].quantity = 0
           }
-          console.log(resFood)
+          // test 输出所有菜品信息
+          // console.log('home.js onload 输出所有菜品信息：',resFood)
 
           // 进入页面后判断购物车是否有数据，如果有，将菜单与购物车quantity数据统一
           if (arr.length > 0) {
@@ -148,8 +148,35 @@ Page({
         }
       },
       fail: function (res) {
-        wx.showToast({
-          title: '系统错误'
+        // wx.showToast({
+        //   title: '网络连接失败'
+        // })
+        // 显示对话框
+        wx.showModal({
+
+          title: '网络连接失败',
+
+          content: '服务器没有开启，需要开启服务器',
+
+          confirmText: '知道了',
+
+          // cancelText: '次要操作',
+
+          success: function (res) {
+
+            if (res.confirm) {
+
+              console.log('用户点击主操作')
+
+            } 
+            // else if (res.cancel) {
+
+            //   console.log('用户点击次要操作')
+
+            // }
+
+          }
+
         })
       },
       complete: function (res) {

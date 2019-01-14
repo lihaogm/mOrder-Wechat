@@ -17,6 +17,7 @@ Page({
     // 遮罩
     maskFlag: true,
     orderlist: []
+    
   },
   // 生命周期函数--监听页面加载
   onLoad: function (Options) {
@@ -32,7 +33,7 @@ Page({
 
     var arr = wx.getStorageSync('cart') || [];
     // 购物车信息
-    console.log('confirmOrder:', arr)
+    // console.log('confirmOrder:', arr)
     for (var i in arr) {
       this.data.totalPrice += arr[i].quantity * arr[i].fshop_price;
       this.data.totalNum += arr[i].quantity
@@ -128,16 +129,20 @@ Page({
     var that = this;
     var shop_id = wx.getStorageSync('shop_id') || [];
     var desk_id = wx.getStorageSync('desk_id') || [];
+    // 获取购物车信息
     var arr = wx.getStorageSync('cart') || [];
+    // 获取所有订单
     var orderlist = wx.getStorageSync('orderlist') || [];
-    //测试用弹出店铺和桌台id/////////////////////////////////////////////
+    // 测试用弹出店铺和桌台id/////////////////////////////////////////////
 
     var order = new Object();
     var key, val, total = '';
-
+    // 顾客信息
+    var customerInfo={}
     var diner_num = this.data.diner_num; //用餐人数
     var dinerNum;
     var remarks = this.data.remarks; //备注信息
+    // 付款方式的id
     var payId = e.currentTarget.dataset.id;
     var rd_session = wx.getStorageSync('rd_session') || [];
     if (diner_num == 0) {
@@ -146,39 +151,44 @@ Page({
       })
     }
     var peoples = this.data.diner_num
-    order["orderId"]="12345678"
-    order["userName"] = "lihaogn"
-    order["orderTime"] = new Date;
-    order["orderContentList"] = arr;
-    order["orderDeskId"] = "#5";
-    order["orderRemarks"] = remarks;
-    order["orderPeopleNum"] = peoples;
-    order["orderTotalPrice"] = this.data.totalPrice;
-    orderlist.push(order);
-    var orderk = JSON.stringify(orderlist);
-    // 所有order信息
-    console.log(order)
 
+    // 给客户信息赋值
+    customerInfo["telphone"]='18260039708' // 手机号码
+    customerInfo["nickName"]='lihaogn' // 昵称
+    customerInfo["wechatNum"]='wylh353179141' // 微信号
+    // 给订单赋值
+    // order["order_id"] = new Date; 
+    order["desk_id"] = "#5"; // 桌号
+    order["remarks"] = remarks; // 备注信息
+    order["peoples"] = peoples; // 用餐人数
+    order["totalPrice"] = this.data.totalPrice; // 总价
+    order["cartlist"] = arr; // 购物车菜品信息
+
+    // test 输出本次order信息
+    // console.log('confirmOrder.js submitOrder: 获取订单信息 ->',order)  
+    // 将本次订单信息放入历史订单中
+    orderlist.push(order);
+    // 将对象变为字符串
+    var orderk = JSON.stringify(order);
+    // test 输出orderk
+    // console.log('confirmOrder.js submitOrder: 获取orderk ->',orderk)
+    // -------------------------------------------------------------------------
     // 向后台发送订单数据
     wx.showLoading()
     wx.request({
       url: 'http://localhost:8080/mOrder/wxOrderAdd',
-      method: 'get',
+      // method: 'POST',
+      // header:{'content-type':'application/json'},
       data: {
-        orderId:order.orderId,
-        userName:order.userName,
-        orderTime:order.orderTime,
-        orderDeskId:order.orderDeskId,
-        orderRemarks:order.orderRemarks,
-        orderPeopleNum:order.orderPeopleNum,
-        orderTotalPrice:order.orderTotalPrice
+        orderInfo:orderk,
+        customerInfo:customerInfo
       },
       success: function (res) {
         if (res.statusCode === 200) {
           // console.log(res)
           // 支付方式关闭动画
           that.animation.translate(0, 285).step();
-          console.log(orderlist)
+          // console.log(orderlist)
           wx.setStorageSync('orderlist', orderlist)
           that.setData({
             animationData: that.animation.export()
@@ -204,8 +214,35 @@ Page({
         }
       },
       fail: function (res) {
-        wx.showToast({
-          title: '系统错误'
+        // wx.showToast({
+        //   title: '系统错误'
+        // })
+        // 显示对话框
+        wx.showModal({
+
+          title: '支付失败',
+
+          content: '网络连接失败',
+
+          confirmText: '知道了',
+
+          // cancelText: '次要操作',
+
+          success: function (res) {
+
+            if (res.confirm) {
+
+              console.log('用户点击主操作')
+
+            }
+            // else if (res.cancel) {
+
+            //   console.log('用户点击次要操作')
+
+            // }
+
+          }
+
         })
       },
       complete: function (res) {
