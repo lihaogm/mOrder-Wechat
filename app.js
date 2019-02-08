@@ -2,6 +2,7 @@
 App({
   onLaunch: function() {
     // this.isLogin()
+    this.getUserInfo()
   },
   // 判断登录是否过期
   // isLogin:function(){
@@ -49,20 +50,38 @@ App({
   //   //   }
   //   // })
   // },
-  getUserInfo: function(cb) {
-    var that = this
-    if (this.globalData.userInfo) {
-      typeof cb == "function" && cb(this.globalData.userInfo)
-    } else {
-      //调用登录接口
-      wx.getUserInfo({
-        withCredentials: false,
-        success: function(res) {
-          that.globalData.userInfo = res.userInfo
-          typeof cb == "function" && cb(that.globalData.userInfo)
-        }
-      })
-    }
+  // getUserInfo: function(cb) {
+  //   var that = this
+  //   if (this.globalData.userInfo) {
+  //     typeof cb == "function" && cb(this.globalData.userInfo)
+  //   } else {
+  //     //调用登录接口
+  //     wx.getUserInfo({
+  //       withCredentials: false,
+  //       success: function(res) {
+  //         console.log(res);
+  //         that.globalData.userInfo = res.userInfo
+  //         typeof cb == "function" && cb(that.globalData.userInfo)
+  //       }
+  //     })
+  //   }
+  // },
+
+  getUserInfo:function(){
+    wx.login({
+      success:function(res){
+        wx.getUserInfo({
+          withCredentials: false,
+          lang: '',
+          success: function (res) { 
+            console.log(res)
+          },
+          fail: function (res) { 
+            console.log("get userInfo failed")},
+          complete: function (res) { },
+        })
+      }
+    })
   },
 
   globalData: {

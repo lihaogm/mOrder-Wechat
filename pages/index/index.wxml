@@ -7,4 +7,8 @@
   <view class="usermotto">
     <text class="user-motto">{{motto}}</text>
   </view>
+  <button open-type="getUserInfo" lang="zh_CN" bindgetuserinfo="onGotUserInfo">
+  获取用户信息
+</button>
+<button bindtap='getCode'>获取登录码</button>
 </view>
