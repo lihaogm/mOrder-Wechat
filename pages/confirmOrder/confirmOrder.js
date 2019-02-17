@@ -81,8 +81,6 @@ Page({
       payWayList: payWay
     });
 
-
-
     // 支付方式打开动画
     var animation = wx.createAnimation({
       duration: 200,
@@ -138,10 +136,15 @@ Page({
     var order = new Object();
     var key, val, total = '';
     // 顾客信息
+    var openId=wx.getStorageSync('loginCode')
+    var userInfo=wx.getStorageSync('userInfo').userInfo;
+    console.log('userInfo: ',userInfo)
     var customerInfo={}
-    var diner_num = this.data.diner_num; //用餐人数
+    // 用餐人数
+    var diner_num = this.data.diner_num;
     var dinerNum;
-    var remarks = this.data.remarks; //备注信息
+    // 备注信息
+    var remarks = this.data.remarks; 
     // 付款方式的id
     var payId = e.currentTarget.dataset.id;
     var rd_session = wx.getStorageSync('rd_session') || [];
@@ -150,12 +153,20 @@ Page({
         diner_num: 1
       })
     }
+    // 用餐人数
     var peoples = this.data.diner_num
 
     // 给客户信息赋值
-    customerInfo["telphone"]='18260039708' // 手机号码
-    customerInfo["nickName"]='lihaogn' // 昵称
-    customerInfo["wechatNum"]='wylh353179141' // 微信号
+    // customerInfo["telphone"]='18260039708' // 手机号码
+    // 微信号
+    customerInfo["openId"]=openId
+    // 昵称
+    customerInfo["nickName"]=userInfo.nickName
+    // 城市
+    customerInfo["city"]=userInfo.city
+    // 性别
+    customerInfo["gender"]=userInfo.gender
+    
     // 给订单赋值
     // order["order_id"] = new Date; 
     order["desk_id"] = "#5"; // 桌号
@@ -170,8 +181,11 @@ Page({
     orderlist.push(order);
     // 将对象变为字符串
     var orderk = JSON.stringify(order);
+    // 将客户信息转为字符串
+    var customerInfoStr=JSON.stringify(customerInfo)
     // test 输出orderk
-    // console.log('confirmOrder.js submitOrder: 获取orderk ->',orderk)
+    console.log('confirmOrder.js submitOrder: 获取orderk ->',orderk)
+    console.log('confirmOrder.js submitOrder: 获取customerInfo ->',customerInfoStr)
     // -------------------------------------------------------------------------
     // 向后台发送订单数据
     wx.showLoading()
@@ -181,7 +195,7 @@ Page({
       // header:{'content-type':'application/json'},
       data: {
         orderInfo:orderk,
-        customerInfo:customerInfo
+        customerInfo:customerInfoStr
       },
       success: function (res) {
         if (res.statusCode === 200) {
@@ -246,9 +260,10 @@ Page({
         })
       },
       complete: function (res) {
-        wx.hideLoading()
+        
       }
     })
+    wx.hideLoading()
 
     // var rescode = 200
     // if (rescode == 200) {

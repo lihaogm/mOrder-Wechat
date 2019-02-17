@@ -1,7 +1,7 @@
 
 Page({
   data: {
-    motto: '欢迎来到香香美食',
+    motto: '欢迎来到南邮',
     userInfo: {},
     orderlist:{},
     listLength:null
