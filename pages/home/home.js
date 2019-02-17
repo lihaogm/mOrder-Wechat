@@ -1,6 +1,7 @@
 //logs.js
 var util = require('../../utils/util.js')
-var sliderWidth = 190// 需要设置slider的宽度，用于计算中间位置
+// 需要设置slider的宽度，用于计算中间位置
+var sliderWidth = 190
 // 最大行数
 var max_row_height = 5;
 // 行高
@@ -17,13 +18,12 @@ Page({
     sliderOffset: 0,
     sliderLeft: 0,
     sliderWidth: 0.5,
-    // 菜品信息
-    food_info_key: [],
-    // 右菜单
-    menu_list: [],
+
+    // 右侧菜品分类列表
+    foodCategoryList: [],
     // 左菜单
-    foodList: [],//展示菜品
-    allFoodList: [],//所有获取到的菜品
+    foodList: [], //分类展示菜品
+    allFoodList: [], //所有获取到的菜品
     //我的订单列表
     orderList: [],
     // 购物车
@@ -31,20 +31,22 @@ Page({
     hasList: false,// 列表是否有数据
     totalPrice: 0,// 总价，初始为0
     totalNum: 0,  //总数，初始为0
+
     // 购物车动画
     animationData: {},
     animationMask: {},
     maskVisual: "hidden",
     maskFlag: true,
+    
     // 左右两侧菜单的初始显示次序
     curNav: 0,
 
     //判断是否登录会员
-    loginFlag: true,
+    // loginFlag: true,
     //判断是否已经发送验证码
-    sendingF: false,
+    // sendingF: false,
     // 倒计时时间
-    second: 60,
+    // second: 60,
 
   },
   // 页面加载
@@ -66,66 +68,67 @@ Page({
       },
       success: function (res) {
         if (res.statusCode === 200) {
+
           // test 服务器返回内容
-          // console.log('home.js onload 服务器返回数据',res.data["foodList"]) 
-          var food_info_key = that.data.food_info_key
-          // 设置页面数据
-          that.setData({
-            food_info_key: res.data
-          })
+          console.log(res.data)
+          console.log('onload 服务器返回数据',res.data["foodList"])
+
+          // 右侧菜品列表数据
+          var foodListData=res.data["foodList"]
+          // 左侧菜品分类列表数据
+          var foodCategoryListData=res.data["foodCategoryList"]
           // 获取缓存数据--购物车
-          var arr = wx.getStorageSync('cart') || [];
-          // 左分类菜单
-          var menu_list = that.data.menu_list;
-          // 获取左侧分类菜单数据
-          var categories = res.data["foodCategoryList"]
+          var cartList = wx.getStorageSync('cart') || [];
+
+          // 左分类菜单 ----------------------------------
           that.setData({
-            menu_list: categories,
+            foodCategoryList: foodCategoryListData,
           })
 
-          // 右菜品菜单
-          var foodList = that.data.foodList;
-          var allFoodList = that.data.allFoodList;
+          // 右菜品菜单 ----------------------------------
+          // var foodList = that.data.foodList;
+          // var allFoodList = that.data.allFoodList;
+
           // 购物车总量、总价
           var totalPrice = that.data.totalPrice
           var totalNum = that.data.totalNum
-          // 获取右侧菜品列表数据
-          var resFood = res.data["foodList"]
+
           // 初始化购买数量
-          for (var i in resFood) {
-            resFood[i].quantity = 0
+          for (var i in foodListData) {
+            foodListData[i].quantity = 0
           }
-          // test 输出所有菜品信息
-          // console.log('home.js onload 输出所有菜品信息：',resFood)
 
           // 进入页面后判断购物车是否有数据，如果有，将菜单与购物车quantity数据统一
-          if (arr.length > 0) {
-            for (var i in arr) {
-              for (var j in resFood) {
-                if (resFood[j].pk_fid == arr[i].pk_fid) {
-                  resFood[j].quantity = arr[i].quantity;
+          if (cartList.length > 0) {
+            for (var i in cartList) {
+              for (var j in foodListData) {
+                if (foodListData[j].pk_fid == cartList[i].pk_fid) {
+                  foodListData[j].quantity = cartList[i].quantity;
                 }
               }
             }
           }
 
           // 进入页面计算购物车总价、总数
-          if (arr.length > 0) {
-            for (var i in arr) {
-              totalPrice += arr[i].fshop_price * arr[i].quantity;
-              totalNum += Number(arr[i].quantity);
+          if (cartList.length > 0) {
+            for (var i in cartList) {
+              // 购买总价
+              totalPrice += cartList[i].fshop_price * cartList[i].quantity;
+              // 购买总数量
+              totalNum += Number(cartList[i].quantity);
             }
           }
+
           // 赋值数据
           that.setData({
             hasList: true,
-            cartList: arr,
-            foodList: resFood,
-            allFoodList: resFood,
-            // payFlag: that.data.payFlag,
+            cartList: cartList,
+            foodList: foodListData,
+            allFoodList: foodListData,
             totalPrice: totalPrice.toFixed(2),
             totalNum: totalNum
           })
+
           wx.getSystemInfo({
             success: function (res) {
               that.setData({
@@ -136,22 +139,23 @@ Page({
           });
 
           // 写入数据到缓存
-          wx.setStorage({
-            key: 'food_key',
-            data: res.data,
-            success: function () {
-              console.log('写入value成功')
-            },
-            fail: function () {
-              console.log('写入value发生错误')
-            }
-          })
+          // wx.setStorage({
+          //   key: 'food_key',
+          //   data: res.data,
+          //   success: function () {
+          //     console.log('写入value成功')
+          //   },
+          //   fail: function () {
+          //     console.log('写入value发生错误')
+          //   }
+          // })
         }
       },
       fail: function (res) {
         // wx.showToast({
         //   title: '网络连接失败'
         // })
+
         // 显示对话框
         wx.showModal({
 
@@ -181,11 +185,15 @@ Page({
         })
       },
       complete: function (res) {
-        wx.hideLoading()
+        // wx.hideLoading()
       }
     })
+
+    wx.hideLoading()
   },
-  // ------------
+
+  // ------------------------------------------------------------
+
   // 点击切换tab
   tabClick: function (e) {
     this.setData({
@@ -193,18 +201,23 @@ Page({
       activeIndex: e.currentTarget.id
     });
   },
+
   // 点击切换右侧数据
   changeRightMenu: function (e) {
-    var classify = e.target.dataset.id;// 获取点击项的id
-    var foodList = this.data.foodList;
+
+    // 获取点击项的id
+    var classify = e.target.dataset.id;
     var allFoodList = this.data.allFoodList;
     var newFoodList = [];
-    if (classify == 0) {//选择了全部选项
+
+    if (classify == 0) {
+      //选择了全部选项
       this.setData({
         curNav: classify,
         foodList: allFoodList
       })
-    } else { //选择了其他选项
+    } else { 
+      //选择了其他选项
       for (var i in allFoodList) {
         if (allFoodList[i].fcwc_id == classify) {
           newFoodList.push(allFoodList[i])
@@ -217,37 +230,51 @@ Page({
       })
     }
   },
+
+  // ------------------------------------------------------------
+  // 购物车操作
+  // ------------------------------------------------------------
+
   // 购物车增加数量
   addCount: function (e) {
     // 获取菜品的id
     var id = e.currentTarget.dataset.id;
     // 获取购物车缓存数据，加入数组中
-    var arr = wx.getStorageSync('cart') || [];
+    var cartList = wx.getStorageSync('cart') || [];
+    // 判断购物车中是否已经有所选菜品
     var f = false;
-    for (var i in this.data.foodList) {// 遍历菜单找到被点击的菜品，数量加1
+    
+    // 遍历菜单找到被点击的菜品，数量加1
+    for (var i in this.data.foodList) {
       if (this.data.foodList[i].pk_fid == id) {
-        this.data.foodList[i].quantity += 1; // 菜品所选数量加1
-        if (arr.length > 0) { // 购物车中原来有数据
-          for (var j in arr) {// 遍历购物车找到被点击的菜品，数量加1
-            if (arr[j].pk_fid == id) {
-              arr[j].quantity += 1;
+        // 所选菜品数量加1
+        this.data.foodList[i].quantity += 1; 
+
+        // 购物车中有数据的情况
+        if (cartList.length > 0) { 
+          // 遍历购物车找到被点击的菜品，数量加1
+          for (var j in cartList) {
+            // 购物车中已有该菜品
+            if (cartList[j].pk_fid == id) {
+              cartList[j].quantity += 1;
               f = true;
               try {
-                wx.setStorageSync('cart', arr)
+                wx.setStorageSync('cart', cartList)
               } catch (e) {
                 console.log(e)
               }
               break;
             }
           }
-          if (!f) { // 如果购物车中没有选中的商品，则添加一个
-            arr.push(this.data.foodList[i]);
+          // 如果购物车中没有选中的商品，则添加一个
+          if (!f) { 
+            cartList.push(this.data.foodList[i]);
           }
-        } else { // 购物车原来没有数据，则添加选中的商品
-          arr.push(this.data.foodList[i]);
+        } else { // 购物车中没有数据，则添加选中的商品
+          cartList.push(this.data.foodList[i]);
         }
         try {
-          wx.setStorageSync('cart', arr)
+          wx.setStorageSync('cart', cartList)
         } catch (e) {
           console.log(e)
         }
@@ -256,38 +283,45 @@ Page({
     }
     // 设置数据，给购物车列表赋值，给菜品列表重新赋值
     this.setData({
-      cartList: arr,
+      cartList: cartList,
       foodList: this.data.foodList
     })
+    // 计算所选菜品总价
     this.getTotalPrice();
   },
-  // 定义根据id删除数组的方法
-  removeByValue: function (array, val) {
-    for (var i = 0; i < array.length; i++) {
-      if (array[i].id == val) {
-        array.splice(i, 1);
+
+  // 根据id删除数组中元素
+  removeByValue: function (cartListay, val) {
+    for (var i = 0; i < cartListay.length; i++) {
+      if (cartListay[i].id == val) {
+        cartListay.splice(i, 1);
         break;
       }
     }
   },
+
   // 购物车减少数量
   minusCount: function (e) {
+    // 获取菜品id
     var id = e.currentTarget.dataset.id;
-    var arr = wx.getStorageSync('cart') || [];
+    // 获取购物车列表数据
+    var cartList = wx.getStorageSync('cart') || [];
+
     for (var i in this.data.foodList) {
       if (this.data.foodList[i].pk_fid == id) {
         this.data.foodList[i].quantity -= 1;
         if (this.data.foodList[i].quantity <= 0) {
           this.data.foodList[i].quantity = 0;
         }
-        if (arr.length > 0) {
-          for (var j in arr) {
-            if (arr[j].pk_fid == id) {
-              arr[j].quantity -= 1;
-              if (arr[j].quantity <= 0) {
-                this.removeByValue(arr, id)
+        if (cartList.length > 0) {
+          for (var j in cartList) {
+            if (cartList[j].pk_fid == id) {
+              cartList[j].quantity -= 1;
+              if (cartList[j].quantity <= 0) {
+                // 根据id删除数组
+                this.removeByValue(cartList, id)
               }
-              if (arr.length <= 0) {
+              if (cartList.length <= 0) {
                 this.setData({
                   foodList: this.data.foodList,
                   cartList: [],
@@ -297,7 +331,7 @@ Page({
                 this.cascadeDismiss()
               }
               try {
-                wx.setStorageSync('cart', arr)
+                wx.setStorageSync('cart', cartList)
               } catch (e) {
                 console.log(e)
               }
@@ -307,28 +341,39 @@ Page({
       }
     }
     this.setData({
-      cartList: arr,
+      cartList: cartList,
       foodList: this.data.foodList
     })
     this.getTotalPrice();
   },
+
   // 获取购物车总价、总数
   getTotalPrice: function () {
-    var cartList = this.data.cartList;                  // 获取购物车列表
+    // 获取购物车列表
+    var cartList = this.data.cartList;
+    // 总价
     var totalP = 0;
+    // 菜品总数
     var totalN = 0
-    for (var i in cartList) {                           // 循环列表得到每个数据
-      totalP += cartList[i].quantity * cartList[i].fshop_price;    // 所有价格加起来     
+
+    // 循环列表得到每个数据
+    for (var i in cartList) {      
+      // 所有价格加起来                     
+      totalP += cartList[i].quantity * cartList[i].fshop_price;         
       totalN += cartList[i].quantity
     }
-    this.setData({                                      // 最后赋值到data中渲染到页面
+    // 最后赋值到data中渲染到页面
+    this.setData({                                      
       cartList: cartList,
       totalNum: totalN,
       totalPrice: totalP.toFixed(2)
     });
   },
+
   // 清空购物车
   cleanList: function (e) {
+
+    // 将所有菜品所选数量清零
     for (var i in this.data.foodList) {
       this.data.foodList[i].quantity = 0;
     }
@@ -344,6 +389,7 @@ Page({
       totalNum: 0,
       totalPrice: 0,
     })
+    // 关闭购物车方法
     this.cascadeDismiss()
   },
 
@@ -351,14 +397,15 @@ Page({
   deleteOne: function (e) {
     var id = e.currentTarget.dataset.id;
     var index = e.currentTarget.dataset.index;
-    var arr = wx.getStorageSync('cart')
+    var cartList = wx.getStorageSync('cart')
     for (var i in this.data.foodList) {
       if (this.data.foodList[i].pk_fid == id) {
         this.data.foodList[i].quantity = 0;
       }
     }
-    arr.splice(index, 1);
-    if (arr.length <= 0) {
+    // 删除index位置的值
+    cartList.splice(index, 1);
+    if (cartList.length <= 0) {
       this.setData({
         foodList: this.data.foodList,
         cartList: [],
@@ -369,23 +416,22 @@ Page({
       this.cascadeDismiss()
     }
     try {
-      wx.setStorageSync('cart', arr)
+      wx.setStorageSync('cart', cartList)
     } catch (e) {
       console.log(e)
     }
-
-
     this.setData({
-      cartList: arr,
+      cartList: cartList,
       foodList: this.data.foodList
     })
     this.getTotalPrice()
   },
+
   //切换购物车开与关
   cascadeToggle: function () {
     var that = this;
-    var arr = this.data.cartList
-    if (arr.length > 0) {
+    var cartList = this.data.cartList
+    if (cartList.length > 0) {
       if (that.data.maskVisual == "hidden") {
         that.cascadePopup()
       } else {
@@ -396,6 +442,7 @@ Page({
     }
 
   },
+
   // 打开购物车方法
   cascadePopup: function () {
     var that = this;
@@ -423,6 +470,7 @@ Page({
       maskFlag: false,
     });
   },
+
   // 关闭购物车方法
   cascadeDismiss: function () {
     var that = this
@@ -442,6 +490,7 @@ Page({
       maskFlag: true
     });
   },
+
   // 跳转确认订单页面
   gotoOrder: function () {
     wx.navigateTo({
@@ -584,11 +633,11 @@ Page({
   //     }
   //   })
   // },
-  GetQueryString: function (name) {
-    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
-    var r = window.location.search.substr(1).match(reg);
-    if (r != null) return unescape(r[2]); return null;
-  }
 
+  // GetQueryString: function (name) {
+  //   var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+  //   var r = window.location.search.substr(1).match(reg);
+  //   if (r != null) return unescape(r[2]); return null;
+  // }
 
 })

@@ -16,21 +16,20 @@
     <view class="weui-tab__panel">
       <!--今日菜单  -->
       <view class="weui-tab__content" hidden="{{activeIndex != 0}}">
-        <!--左侧栏  -->
+        <!-- 左侧栏 菜品分类 -->
         <scroll-view scroll-y class="left-cont">
           <view class="classify  {{curNav == 0 ? 'active' : ''}}" bindtap="changeRightMenu" data-id="0">全部</view>
-          <block class="caixi" wx:key="id" wx:for="{{menu_list}}">
+          <block class="caixi" wx:key="*this" wx:for="{{foodCategoryList}}">
             <view class="classify  {{curNav == item.pk_fcwc_id ? 'active' : ''}}" bindtap="changeRightMenu" data-id="{{item.pk_fcwc_id}}">{{item.fcwc_name}}</view>
           </block>
         </scroll-view>
-        <!--右侧栏  -->
+        <!-- 右侧栏 -->
         <scroll-view scroll-y class="right-cont">
           <block wx:for="{{foodList}}" wx:key="item.pk_fid">
             <view class="weui-panel__bd mb_bottom">
               <view class=" weui-media-box_appmsg bc_white mT" hover-class="none">
                 <view class="weui-media-box__hd  img_box ">
-                  <!--图片链接  -->
-
+                  <!-- 图片链接 -->
                   <!-- <image class="weui-media-box__thumb"  src=""/>     -->
                   <image class="weui-media-box__thumb img_box" src="{{'http://106.14.203.87:8080/morder_v0.1/'+item.fimage}}" />
                 </view>
@@ -88,6 +87,7 @@
             <!-- 加号 -->
             <view class="iconfont icon-plus1  fontP" bindtap="addCount" data-id="{{item.pk_fid}}" data-index="{{index}}"></view>
           </view>
+          <!-- 删除该项 -->
           <icon class="shopcart_delete" type="clear" size="18" data-index="{{index}}" data-id="{{item.pk_fid}}" bindtap="deleteOne" />
         </view>
       </block>
