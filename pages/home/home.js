@@ -58,7 +58,8 @@ Page({
 
     // 获取服务器数据
     wx.request({
-      url: 'http://localhost:8080/mOrder/wxFoodList',
+      // url: 'http://localhost:8080/mOrder/wxFoodList',
+      url: 'http://106.14.203.87:8080/morder_v0.1/wxFoodList',
       method: 'get',
       data: {
         id: 1
